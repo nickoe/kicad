@@ -664,19 +664,23 @@ void FOOTPRINT_EDIT_FRAME::Process_Special_Functions( wxCommandEvent& event )
                 case PCB_MODULE_EDGE_T:
                     move_cmd = ID_POPUP_PCB_MOVE_EDGE;
                     break;
+                default:
+                    break;
                 }
 
-                SetMsgPanel( new_item );
-                SetCurItem( new_item );
+                if ( move_cmd )
+                {
+                    SetMsgPanel( new_item );
+                    SetCurItem( new_item );
 
-                m_canvas->MoveCursorToCrossHair();
+                    m_canvas->MoveCursorToCrossHair();
+
+                    // pick up the item and start moving
+                    PostCommandMenuEvent( move_cmd );
+                }
             }
 
-            if ( move_cmd )
-            {
-                // pick up the item and start moving
-                PostCommandMenuEvent( move_cmd );
-            }
+
         }
         break;
 
