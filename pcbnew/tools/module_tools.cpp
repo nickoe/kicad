@@ -607,6 +607,8 @@ int MODULE_TOOLS::CreateArray( TOOL_EVENT& aEvent )
 
     if( ret == DIALOG_CREATE_ARRAY::CREATE_ARRAY_OK && array_opts != NULL )
     {
+        wxPoint rotPoint = selection.GetCenter();
+
         for( int i = 0; i < selection.Size(); ++i )
         {
             BOARD_ITEM* item = selection.Item<BOARD_ITEM>( i );
@@ -623,7 +625,7 @@ int MODULE_TOOLS::CreateArray( TOOL_EVENT& aEvent )
             {
                 BOARD_ITEM* newItem = module->DuplicateAndAddItem( item, true );
 
-                array_opts->TransformItem( ptN, newItem );
+                array_opts->TransformItem( ptN, newItem, rotPoint );
 
                 m_toolMgr->RunAction( COMMON_ACTIONS::unselectItem, true, newItem );
                 m_view->Add( newItem );

@@ -154,8 +154,8 @@ int DIALOG_CREATE_ARRAY::ARRAY_GRID_OPTIONS::GetArraySize() const
     return n_x * n_y;
 }
 
-
-void DIALOG_CREATE_ARRAY::ARRAY_GRID_OPTIONS::TransformItem( int n, BOARD_ITEM* item ) const
+void DIALOG_CREATE_ARRAY::ARRAY_GRID_OPTIONS::TransformItem( int n, BOARD_ITEM* item,
+                                                             const wxPoint& rotPoint ) const
 {
     wxPoint point;
 
@@ -190,7 +190,8 @@ int DIALOG_CREATE_ARRAY::ARRAY_CIRCULAR_OPTIONS::GetArraySize() const
 }
 
 
-void DIALOG_CREATE_ARRAY::ARRAY_CIRCULAR_OPTIONS::TransformItem( int n, BOARD_ITEM* item ) const
+void DIALOG_CREATE_ARRAY::ARRAY_CIRCULAR_OPTIONS::TransformItem( int n, BOARD_ITEM* item,
+                                                                 const wxPoint& rotPoint ) const
 {
     const double angle = d_angle * n * 10;
 

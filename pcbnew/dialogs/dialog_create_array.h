@@ -64,7 +64,7 @@ public:
          *
          * TODO: Can/should this be done with some sort of iterator?
          */
-        virtual void TransformItem( int n, BOARD_ITEM* item ) const = 0;
+        virtual void TransformItem( int n, BOARD_ITEM* item, const wxPoint& rotPoint ) const = 0;
         virtual int GetArraySize() const = 0;
     };
 
@@ -81,7 +81,7 @@ public:
         wxPoint offset;
         long stagger_x, stagger_y;
 
-        void TransformItem( int n, BOARD_ITEM* item ) const; // override virtual
+        void TransformItem( int n, BOARD_ITEM* item, const wxPoint& rotPoint ) const; // override virtual
         int GetArraySize() const; // override virtual
     };
 
@@ -99,7 +99,7 @@ public:
         wxPoint centre;
         bool m_rotateItems;
 
-        void TransformItem( int n, BOARD_ITEM* item ) const; // override virtual
+        void TransformItem( int n, BOARD_ITEM* item, const wxPoint& rotPoint ) const; // override virtual
         int GetArraySize() const; // override virtual
     };
 
