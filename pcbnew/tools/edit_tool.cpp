@@ -615,12 +615,14 @@ int EDIT_TOOL::MoveExact( TOOL_EVENT& aEvent )
             editFrame->SaveCopyInUndoList( selection.items, UR_CHANGED );
         }
 
+        wxPoint rotPoint = selection.GetCenter();
+
         for( unsigned int i = 0; i < selection.items.GetCount(); ++i )
         {
             BOARD_ITEM* item = selection.Item<BOARD_ITEM>( i );
 
             item->Move( translation );
-            item->Rotate( item->GetPosition(), rotation );
+            item->Rotate( rotPoint, rotation );
 
             if( !m_dragging )
                 item->ViewUpdate( KIGFX::VIEW_ITEM::GEOMETRY );
