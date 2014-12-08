@@ -32,6 +32,7 @@
 // initialise statics
 DIALOG_MOVE_EXACT::MOVE_EXACT_OPTIONS DIALOG_MOVE_EXACT::m_options;
 
+
 DIALOG_MOVE_EXACT::DIALOG_MOVE_EXACT( PCB_BASE_FRAME* aParent,
                                       wxPoint& translation, double& rotation ):
     DIALOG_MOVE_EXACT_BASE( aParent ),
@@ -55,9 +56,11 @@ DIALOG_MOVE_EXACT::DIALOG_MOVE_EXACT( PCB_BASE_FRAME* aParent,
     m_rotEntry->SetValue( wxString::FromDouble( m_options.entryRotation ) );
 }
 
+
 DIALOG_MOVE_EXACT::~DIALOG_MOVE_EXACT()
 {
 }
+
 
 /*!
  * Convert a given Cartesian point into a polar representation.
@@ -73,30 +76,34 @@ void DIALOG_MOVE_EXACT::ToPolarDeg( double x, double y, double& r, double& q )
     q = ( r != 0) ? RAD2DEG( atan2( y, x ) ) : 0;
 }
 
+
+/*!
+ * Get the (Cartesian) translation described by the text entries
+ * @param val output translation vector
+ * @param polar interpret as polar coords
+ * @return false if error (though the text conversion functions don't report errors)
+ */
 bool DIALOG_MOVE_EXACT::GetTranslationInIU ( wxPoint& val, bool polar )
 {
-    // entries in user units
-    double ent1, ent2;
-    bool ok = m_xEntry->GetValue().ToDouble( &ent1 );
-    ok = ok && m_yEntry->GetValue().ToDouble( &ent2 );
-
-    if( !ok )
-        return false;
-
     if( polar )
     {
-        val.x = From_User_Unit( g_UserUnit, ent1 * cos( DEG2RAD( ent2 ) ) );
-        val.y = From_User_Unit( g_UserUnit, ent1 * sin( DEG2RAD( ent2 ) ) );
+        const int r = ValueFromTextCtrl( *m_xEntry );
+        const double q = DoubleValueFromString( DEGREES, m_yEntry->GetValue() );
+
+        val.x = r * cos( DEG2RAD( q / 10.0 ) );
+        val.y = r * sin( DEG2RAD( q / 10.0 ) );
     }
     else
     {
         // direct read
-        val.x = From_User_Unit( g_UserUnit, ent1 );
-        val.y = From_User_Unit( g_UserUnit, ent2 );
+        val.x = ValueFromTextCtrl( *m_xEntry );
+        val.y = ValueFromTextCtrl( *m_yEntry );
     }
 
+    // no validation to do here, but in future, you could return false here
     return true;
 }
+
 
 void DIALOG_MOVE_EXACT::OnPolarChanged( wxCommandEvent& event )
 {
@@ -104,13 +111,9 @@ void DIALOG_MOVE_EXACT::OnPolarChanged( wxCommandEvent& event )
     wxPoint val;
 
     // get the value as previously stored
-    bool ok = GetTranslationInIU( val, !newPolar );
+    GetTranslationInIU( val, !newPolar );
 
-    // invalid entries - bail out
-    if( !ok )
-        return;
-
-    if( m_polarCoords->IsChecked() )
+    if( newPolar )
     {
         // convert to polar coordinates
         double r, q;
@@ -122,14 +125,15 @@ void DIALOG_MOVE_EXACT::OnPolarChanged( wxCommandEvent& event )
         m_yEntry->SetValue( wxString::FromDouble( q ) );
         m_yLabel->SetLabelText( wxT( "\u03b8:" ) ); // theta
 
-        m_yUnit->SetLabelText( _( "deg" ) );
+        m_yUnit->SetLabelText( GetAbbreviatedUnitsLabel( DEGREES ) );
     }
     else
     {
         // vector is already in Cartesian, so just render out
 
         // note - round off the last decimal place (10nm) to prevent
-        // rounding causing errors when round-tripping
+        // (some) rounding causing errors when round-tripping
+        // you can never eliminate entirely, however
         PutValueInLocalUnits( *m_xEntry, round( val.x / 10.0) * 10 );
         m_xLabel->SetLabelText( wxT( "x:" ) );
 
@@ -139,6 +143,7 @@ void DIALOG_MOVE_EXACT::OnPolarChanged( wxCommandEvent& event )
         m_yUnit->SetLabelText( GetAbbreviatedUnitsLabel( g_UserUnit ) );
     }
 }
+
 
 void DIALOG_MOVE_EXACT::OnClear( wxCommandEvent& event )
 {
@@ -162,19 +167,21 @@ void DIALOG_MOVE_EXACT::OnClear( wxCommandEvent& event )
         entry->SetValue( "0" );
 }
 
+
 void DIALOG_MOVE_EXACT::OnCancelClick( wxCommandEvent& event )
 {
     EndModal( MOVE_ABORT );
 }
+
+
 void DIALOG_MOVE_EXACT::OnOkClick( wxCommandEvent& event )
 {
-    bool ok = m_rotEntry->GetValue().ToDouble( &m_rotation );
-    m_rotation *= 10.0f;
+    m_rotation = DoubleValueFromString( DEGREES, m_rotEntry->GetValue() );
 
     // for the output, we only deliver a Cartesian vector
-    ok = ok && GetTranslationInIU( m_translation, m_polarCoords->IsChecked() );
+    bool ok = GetTranslationInIU( m_translation, m_polarCoords->IsChecked() );
 
-    if( ok )
+    if ( ok )
     {
         // save the settings
         m_options.polarCoords = m_polarCoords->GetValue();
@@ -186,3 +193,16 @@ void DIALOG_MOVE_EXACT::OnOkClick( wxCommandEvent& event )
     }
 }
 
+
+/*!
+ * Reset a text field to be 0 if it was exited while blank
+ */
+void DIALOG_MOVE_EXACT::OnTextFocusLost( wxFocusEvent& event )
+{
+    wxTextCtrl* obj = static_cast<wxTextCtrl*>( event.GetEventObject() );
+
+    if( obj->GetValue().IsEmpty() )
+    {
+        obj->SetValue("0");
+    }
+}

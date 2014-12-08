@@ -44,6 +44,23 @@ public:
         MOVE_OK,        ///< if successfully changed
     };
 
+    // Constructor and destructor
+    DIALOG_MOVE_EXACT( PCB_BASE_FRAME* aParent, wxPoint& translation,
+                       double& rotation );
+    ~DIALOG_MOVE_EXACT();
+
+private:
+
+    void OnTextFocusLost( wxFocusEvent& event );
+    void OnPolarChanged( wxCommandEvent& event );
+    void OnClear( wxCommandEvent& event );
+
+    void OnCancelClick( wxCommandEvent& event );
+    void OnOkClick( wxCommandEvent& event );
+
+    void ToPolarDeg( double x, double y, double& r, double& q );
+    bool GetTranslationInIU ( wxPoint& val, bool polar );
+
     /**
      * Persistent dialog options
      */
@@ -63,24 +80,8 @@ public:
         }
     };
 
-    // Constructor and destructor
-    DIALOG_MOVE_EXACT( PCB_BASE_FRAME* aParent, wxPoint& translation,
-                       double& rotation );
-    ~DIALOG_MOVE_EXACT();
-
     // persistent settings
     static MOVE_EXACT_OPTIONS m_options;
-
-private:
-
-    void OnPolarChanged( wxCommandEvent& event );
-    void OnClear( wxCommandEvent& event );
-
-    void OnCancelClick( wxCommandEvent& event );
-    void OnOkClick( wxCommandEvent& event );
-
-    void ToPolarDeg( double x, double y, double& r, double& q );
-    bool GetTranslationInIU ( wxPoint& val, bool polar );
 };
 
 #endif      //  __DIALOG_MOVE_EXACT__

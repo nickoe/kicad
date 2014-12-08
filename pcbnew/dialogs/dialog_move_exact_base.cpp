@@ -87,8 +87,11 @@ DIALOG_MOVE_EXACT_BASE::DIALOG_MOVE_EXACT_BASE( wxWindow* parent, wxWindowID id,
 	// Connect Events
 	this->Connect( wxEVT_CLOSE_WINDOW, wxCloseEventHandler( DIALOG_MOVE_EXACT_BASE::OnClose ) );
 	m_polarCoords->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( DIALOG_MOVE_EXACT_BASE::OnPolarChanged ), NULL, this );
+	m_xEntry->Connect( wxEVT_KILL_FOCUS, wxFocusEventHandler( DIALOG_MOVE_EXACT_BASE::OnTextFocusLost ), NULL, this );
 	m_clearX->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( DIALOG_MOVE_EXACT_BASE::OnClear ), NULL, this );
+	m_yEntry->Connect( wxEVT_KILL_FOCUS, wxFocusEventHandler( DIALOG_MOVE_EXACT_BASE::OnTextFocusLost ), NULL, this );
 	m_clearY->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( DIALOG_MOVE_EXACT_BASE::OnClear ), NULL, this );
+	m_rotEntry->Connect( wxEVT_KILL_FOCUS, wxFocusEventHandler( DIALOG_MOVE_EXACT_BASE::OnTextFocusLost ), NULL, this );
 	m_clearRot->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( DIALOG_MOVE_EXACT_BASE::OnClear ), NULL, this );
 	m_stdButtonsCancel->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( DIALOG_MOVE_EXACT_BASE::OnCancelClick ), NULL, this );
 	m_stdButtonsOK->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( DIALOG_MOVE_EXACT_BASE::OnOkClick ), NULL, this );
@@ -99,8 +102,11 @@ DIALOG_MOVE_EXACT_BASE::~DIALOG_MOVE_EXACT_BASE()
 	// Disconnect Events
 	this->Disconnect( wxEVT_CLOSE_WINDOW, wxCloseEventHandler( DIALOG_MOVE_EXACT_BASE::OnClose ) );
 	m_polarCoords->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( DIALOG_MOVE_EXACT_BASE::OnPolarChanged ), NULL, this );
+	m_xEntry->Disconnect( wxEVT_KILL_FOCUS, wxFocusEventHandler( DIALOG_MOVE_EXACT_BASE::OnTextFocusLost ), NULL, this );
 	m_clearX->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( DIALOG_MOVE_EXACT_BASE::OnClear ), NULL, this );
+	m_yEntry->Disconnect( wxEVT_KILL_FOCUS, wxFocusEventHandler( DIALOG_MOVE_EXACT_BASE::OnTextFocusLost ), NULL, this );
 	m_clearY->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( DIALOG_MOVE_EXACT_BASE::OnClear ), NULL, this );
+	m_rotEntry->Disconnect( wxEVT_KILL_FOCUS, wxFocusEventHandler( DIALOG_MOVE_EXACT_BASE::OnTextFocusLost ), NULL, this );
 	m_clearRot->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( DIALOG_MOVE_EXACT_BASE::OnClear ), NULL, this );
 	m_stdButtonsCancel->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( DIALOG_MOVE_EXACT_BASE::OnCancelClick ), NULL, this );
 	m_stdButtonsOK->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( DIALOG_MOVE_EXACT_BASE::OnOkClick ), NULL, this );
