@@ -521,31 +521,38 @@ int MODULE_TOOLS::DuplicateItems ( TOOL_EVENT& aEvent )
     // the original
     m_toolMgr->IncUndoInhibit();
 
+    std::vector<BOARD_ITEM*> old_items;
+
     for( int i = 0; i < selection.Size(); ++i )
     {
         BOARD_ITEM* item = selection.Item<BOARD_ITEM>( i );
 
-        if( item )
+        if ( item )
+            old_items.push_back( item );
+    }
+
+    for( unsigned i = 0; i < old_items.size(); ++i )
+    {
+        BOARD_ITEM* item = old_items[i];
+
+        // Unselect the item, so we won't pick it up again
+        // Do this first, so a single-item duplicate will correctly call
+        // SetCurItem and show the item properties
+        m_toolMgr->RunAction( COMMON_ACTIONS::unselectItem, true, item );
+
+        BOARD_ITEM* new_item = module->DuplicateAndAddItem( item );
+
+        if( new_item )
         {
-            // Unselect the item, so we won't pick it up again
-            // Do this first, so a single-item duplicate will correctly call
-            // SetCurItem and show the item properties
-            m_toolMgr->RunAction( COMMON_ACTIONS::unselectItem, true, item );
+            m_view->Add( new_item );
 
-            BOARD_ITEM* new_item = module->DuplicateAndAddItem( item );
-
-            if( new_item )
-            {
-                m_view->Add( new_item );
-
-                // Select the new item, so we can pick it up
-                m_toolMgr->RunAction( COMMON_ACTIONS::selectItem, true, new_item );
-            }
+            // Select the new item, so we can pick it up
+            m_toolMgr->RunAction( COMMON_ACTIONS::selectItem, true, new_item );
         }
     }
 
     m_frame->DisplayToolMsg( wxString::Format( _( "Duplicated %d item(s)" ),
-                             selection.Size() ) );
+                             (int) old_items.size() ) );
 
     // pick up the selected item(s) and start moving
     // this works well for "dropping" copies around
