@@ -64,8 +64,8 @@
 
 
 // Functions defined in block_module_editor, but used here
-// These 3 functions are used in modedit to rotate or mirror the whole footprint
-// so they are called with force_all = true
+// These 3 functions are used in modedit to rotate, mirror or move the
+// whole footprint so they are called with force_all = true
 void MirrorMarkedItems( MODULE* module, wxPoint offset, bool force_all = false );
 void RotateMarkedItems( MODULE* module, wxPoint offset, bool force_all = false );
 void MoveMarkedItemsExactly( MODULE* module, const wxPoint& centre,
@@ -668,7 +668,7 @@ void FOOTPRINT_EDIT_FRAME::Process_Special_Functions( wxCommandEvent& event )
                     break;
                 }
 
-                if ( move_cmd )
+                if( move_cmd )
                 {
                     SetMsgPanel( new_item );
                     SetCurItem( new_item );
@@ -679,8 +679,6 @@ void FOOTPRINT_EDIT_FRAME::Process_Special_Functions( wxCommandEvent& event )
                     PostCommandMenuEvent( move_cmd );
                 }
             }
-
-
         }
         break;
 

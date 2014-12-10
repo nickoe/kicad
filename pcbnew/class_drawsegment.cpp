@@ -105,7 +105,6 @@ void DRAWSEGMENT::Rotate( const wxPoint& aRotCentre, double aAngle )
         break;
 
     case S_POLYGON:
-
         for( unsigned ii = 0; ii < m_PolyPoints.size(); ii++ )
         {
             RotatePoint( &m_PolyPoints[ii], aRotCentre, aAngle);
@@ -113,11 +112,10 @@ void DRAWSEGMENT::Rotate( const wxPoint& aRotCentre, double aAngle )
         break;
 
     case S_CURVE:
-
         RotatePoint( &m_Start, aRotCentre, aAngle);
         RotatePoint( &m_End, aRotCentre, aAngle);
 
-        for (unsigned int ii = 0; ii < m_BezierPoints.size(); ii++ )
+        for( unsigned int ii = 0; ii < m_BezierPoints.size(); ii++ )
         {
             RotatePoint( &m_BezierPoints[ii], aRotCentre, aAngle);
         }

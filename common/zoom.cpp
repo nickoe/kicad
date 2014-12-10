@@ -294,6 +294,8 @@ void EDA_DRAW_FRAME::AddMenuZoomAndGrid( wxMenu* MasterMenu )
                     break;
 
                 case UNSCALED_UNITS:
+                case DEGREES:
+                    wxASSERT_MSG( false, wxT( "Unhandled grid unit: " + g_UserUnit ) );
                     msg = wxT( "???" );
                     break;
                 }

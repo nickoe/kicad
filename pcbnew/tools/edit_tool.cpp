@@ -210,7 +210,7 @@ int EDIT_TOOL::Main( TOOL_EVENT& aEvent )
                     break;
 
                 // Save items, so changes can be undone
-                if ( !inhibitUndo )
+                if( !inhibitUndo )
                 {
                     editFrame->OnModify();
                     editFrame->SaveCopyInUndoList( selection.items, UR_CHANGED );
@@ -252,7 +252,7 @@ int EDIT_TOOL::Main( TOOL_EVENT& aEvent )
 
     }
 
-    if ( m_dragging )
+    if( m_dragging )
         m_toolMgr->DecUndoInhibit();
 
     m_dragging = false;

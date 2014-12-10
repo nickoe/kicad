@@ -90,12 +90,12 @@ public:
     virtual const wxPoint& GetPosition() const = 0;
 
     /**
-     * Function GetCentre()
-     *
-     * @return centre point of the item
+     * Function GetCenter()
      *
      * This defaults to the same point as returned by GetPosition(), unless
      * overridden
+     *
+     * @return centre point of the item
      */
     virtual const wxPoint GetCenter() const { return GetPosition(); }
 

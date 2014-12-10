@@ -845,6 +845,10 @@ void GERBVIEW_FRAME::UpdateStatusBar()
             formatter = wxT( "Ro %.5f Th %.1f" );
             break;
 
+        case DEGREES:
+            wxASSERT_MSG( false, wxT( "Not a length unit " + g_UserUnit ) );
+            // no break
+
         case UNSCALED_UNITS:
             formatter = wxT( "Ro %f Th %f" );
             break;
@@ -872,6 +876,10 @@ void GERBVIEW_FRAME::UpdateStatusBar()
         absformatter = wxT( "X %.5f  Y %.5f" );
         locformatter = wxT( "dx %.5f  dy %.5f  d %.5f" );
         break;
+
+    case DEGREES:
+        wxASSERT_MSG( false, wxT( "Not a length unit " + g_UserUnit ) );
+        // no break
 
     case UNSCALED_UNITS:
         absformatter = wxT( "X %f  Y %f" );

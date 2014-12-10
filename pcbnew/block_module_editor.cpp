@@ -59,8 +59,8 @@
 #define BLOCK_COLOR BROWN
 
 // Functions defined here, but used also in other files
-// These 3 functions are used in modedit to rotate or mirror the whole footprint
-// so they are called with force_all = true
+// These 3 functions are used in modedit to rotate, mirror or move the
+// whole footprint so they are called with force_all = true
 void MirrorMarkedItems( MODULE* module, wxPoint offset, bool force_all = false );
 void RotateMarkedItems( MODULE* module, wxPoint offset, bool force_all = false );
 void MoveMarkedItemsExactly( MODULE* module, const wxPoint& centre,
@@ -172,24 +172,21 @@ bool FOOTPRINT_EDIT_FRAME::HandleBlockEnd( wxDC* DC )
         break;
 
     case BLOCK_MOVE_EXACT:
+        itemsCount = MarkItemsInBloc( currentModule, GetScreen()->m_BlockLocate );
+
+        if( itemsCount )
         {
-            itemsCount = MarkItemsInBloc( currentModule, GetScreen()->m_BlockLocate );
+            wxPoint translation;
+            double rotation = 0;
 
-            if ( itemsCount )
+            DIALOG_MOVE_EXACT dialog( this, translation, rotation  );
+            int ret = dialog.ShowModal();
+
+            if( ret == DIALOG_MOVE_EXACT::MOVE_OK )
             {
-                wxPoint translation;
-                double rotation = 0;
-
-                DIALOG_MOVE_EXACT dialog( this, translation, rotation  );
-                int ret = dialog.ShowModal();
-
-
-                if( ret == DIALOG_MOVE_EXACT::MOVE_OK )
-                {
-                    SaveCopyInUndoList( currentModule, UR_MODEDIT );
-                    const wxPoint blockCentre = GetScreen()->m_BlockLocate.Centre();
-                    MoveMarkedItemsExactly( currentModule, blockCentre, translation, rotation );
-                }
+                SaveCopyInUndoList( currentModule, UR_MODEDIT );
+                const wxPoint blockCentre = GetScreen()->m_BlockLocate.Centre();
+                MoveMarkedItemsExactly( currentModule, blockCentre, translation, rotation );
             }
         }
         break;
@@ -221,7 +218,6 @@ bool FOOTPRINT_EDIT_FRAME::HandleBlockEnd( wxDC* DC )
 
         RotateMarkedItems( currentModule, GetScreen()->m_BlockLocate.Centre() );
         break;
-
 
     case BLOCK_MIRROR_X:
     case BLOCK_MIRROR_Y:
