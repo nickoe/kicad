@@ -491,6 +491,8 @@ int MODULE_TOOLS::PasteItems( TOOL_EVENT& aEvent )
 
 int MODULE_TOOLS::DuplicateItems ( TOOL_EVENT& aEvent )
 {
+    bool increment = aEvent.IsAction( &COMMON_ACTIONS::duplicateIncrement );
+
     MODULE* module = m_board->m_Modules;
     assert( module );
 
@@ -540,7 +542,7 @@ int MODULE_TOOLS::DuplicateItems ( TOOL_EVENT& aEvent )
         // SetCurItem and show the item properties
         m_toolMgr->RunAction( COMMON_ACTIONS::unselectItem, true, item );
 
-        BOARD_ITEM* new_item = module->DuplicateAndAddItem( item );
+        BOARD_ITEM* new_item = module->DuplicateAndAddItem( item, increment );
 
         if( new_item )
         {
@@ -643,6 +645,7 @@ void MODULE_TOOLS::setTransitions()
     Go( &MODULE_TOOLS::CopyItems,           COMMON_ACTIONS::copyItems.MakeEvent() );
     Go( &MODULE_TOOLS::PasteItems,          COMMON_ACTIONS::pasteItems.MakeEvent() );
     Go( &MODULE_TOOLS::DuplicateItems,      COMMON_ACTIONS::duplicate.MakeEvent() );
+    Go( &MODULE_TOOLS::DuplicateItems,      COMMON_ACTIONS::duplicateIncrement.MakeEvent() );
     Go( &MODULE_TOOLS::ModuleTextOutlines,  COMMON_ACTIONS::moduleTextOutlines.MakeEvent() );
     Go( &MODULE_TOOLS::ModuleEdgeOutlines,  COMMON_ACTIONS::moduleEdgeOutlines.MakeEvent() );
 }

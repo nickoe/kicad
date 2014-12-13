@@ -462,7 +462,8 @@ public:
     int GetPlacementCost90() const          { return m_CntRot90; }
     void SetPlacementCost90( int aCost )    { m_CntRot90 = aCost; }
 
-    BOARD_ITEM* DuplicateAndAddItem( const BOARD_ITEM* item );
+    BOARD_ITEM* DuplicateAndAddItem( const BOARD_ITEM* item,
+                                     bool aIncrementPadNumbers );
 
     /**
      * Function Add3DModel

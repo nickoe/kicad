@@ -169,7 +169,8 @@ bool FOOTPRINT_EDIT_FRAME::OnHotKey( wxDC* aDC, int aHotKey, const wxPoint& aPos
         break;
 
     case HK_DUPLICATE_ITEM:
-        OnHotkeyDuplicateItem();
+    case HK_DUPLICATE_ITEM_AND_INCREMENT:
+        OnHotkeyDuplicateItem( HK_Descr->m_Idcommand );
         break;
     }
 
@@ -362,7 +363,7 @@ bool FOOTPRINT_EDIT_FRAME::OnHotkeyMoveItemExact()
     return PostCommandMenuEvent( evt_type );
 }
 
-bool FOOTPRINT_EDIT_FRAME::OnHotkeyDuplicateItem()
+bool FOOTPRINT_EDIT_FRAME::OnHotkeyDuplicateItem( int aIdCommand )
 {
     BOARD_ITEM* item = PrepareItemForHotkey( true );
 
@@ -376,8 +377,13 @@ bool FOOTPRINT_EDIT_FRAME::OnHotkeyDuplicateItem()
     case PCB_PAD_T:
     case PCB_MODULE_EDGE_T:
     case PCB_MODULE_TEXT_T:
-        evt_type = ID_POPUP_PCB_DUPLICATE_ITEM;
+        if( aIdCommand == HK_DUPLICATE_ITEM )
+            evt_type = ID_POPUP_PCB_DUPLICATE_ITEM;
+        else
+            evt_type = ID_POPUP_PCB_DUPLICATE_ITEM_AND_INCREMENT;
+
         break;
+
     default:
         break;
     }

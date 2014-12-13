@@ -71,6 +71,9 @@ public:
     /// Activation of the duplication tool
     static TOOL_ACTION duplicate;
 
+    /// Activation of the duplication tool with incrementing (e.g. pad number)
+    static TOOL_ACTION duplicateIncrement;
+
     /// Deleting a BOARD_ITEM
     static TOOL_ACTION remove;
 

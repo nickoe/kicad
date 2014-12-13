@@ -1112,18 +1112,22 @@ void MODULE::SetOrientation( double newangle )
     CalculateBoundingBox();
 }
 
-BOARD_ITEM* MODULE::DuplicateAndAddItem( const BOARD_ITEM* item )
+BOARD_ITEM* MODULE::DuplicateAndAddItem( const BOARD_ITEM* aItem,
+                                         bool aIncrementPadNumbers )
 {
     BOARD_ITEM* new_item = NULL;
 
-    switch( item->Type() )
+    switch( aItem->Type() )
     {
     case PCB_PAD_T:
     {
-        D_PAD* new_pad = new D_PAD( *static_cast<const D_PAD*>( item ) );
+        D_PAD* new_pad = new D_PAD( *static_cast<const D_PAD*>( aItem ) );
 
-        // Take the next available pad number
-        new_pad->IncrementPadName( true, true );
+        if( aIncrementPadNumbers )
+        {
+            // Take the next available pad number
+            new_pad->IncrementPadName( true, true );
+        }
 
         Pads().PushBack( new_pad );
         new_item = new_pad;
@@ -1131,7 +1135,7 @@ BOARD_ITEM* MODULE::DuplicateAndAddItem( const BOARD_ITEM* item )
     }
     case PCB_MODULE_TEXT_T:
     {
-        const TEXTE_MODULE* old_text = static_cast<const TEXTE_MODULE*>( item );
+        const TEXTE_MODULE* old_text = static_cast<const TEXTE_MODULE*>( aItem );
 
         // do not duplicate value or reference fields
         // (there can only be one of each)
@@ -1147,7 +1151,7 @@ BOARD_ITEM* MODULE::DuplicateAndAddItem( const BOARD_ITEM* item )
     case PCB_MODULE_EDGE_T:
     {
         EDGE_MODULE* new_edge = new EDGE_MODULE(
-                *static_cast<const EDGE_MODULE*>(item) );
+                *static_cast<const EDGE_MODULE*>(aItem) );
 
         GraphicalItems().PushBack( new_edge );
         new_item = new_edge;
@@ -1156,7 +1160,7 @@ BOARD_ITEM* MODULE::DuplicateAndAddItem( const BOARD_ITEM* item )
     default:
         // Un-handled item for duplication
         wxASSERT_MSG( false, "Duplication not supported for items of class "
-                      + item->GetClass() );
+                      + aItem->GetClass() );
         break;
     }
 

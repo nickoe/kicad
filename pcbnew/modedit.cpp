@@ -641,45 +641,11 @@ void FOOTPRINT_EDIT_FRAME::Process_Special_Functions( wxCommandEvent& event )
         break;
 
     case ID_POPUP_PCB_DUPLICATE_ITEM:
-        {
-            SaveCopyInUndoList( GetBoard()->m_Modules, UR_MODEDIT );
+        DuplicateItems( false );
+        break;
 
-            BOARD_ITEM* item = GetScreen()->GetCurItem();
-            MODULE* module = static_cast<MODULE*>( item->GetParent() );
-
-            int move_cmd = 0;
-
-            BOARD_ITEM* new_item = module->DuplicateAndAddItem( item );
-
-            if( new_item )
-            {
-                switch( new_item->Type() )
-                {
-                case PCB_PAD_T:
-                    move_cmd = ID_POPUP_PCB_MOVE_PAD_REQUEST;
-                    break;
-                case PCB_MODULE_TEXT_T:
-                    move_cmd = ID_POPUP_PCB_MOVE_TEXTMODULE_REQUEST;
-                    break;
-                case PCB_MODULE_EDGE_T:
-                    move_cmd = ID_POPUP_PCB_MOVE_EDGE;
-                    break;
-                default:
-                    break;
-                }
-
-                if( move_cmd )
-                {
-                    SetMsgPanel( new_item );
-                    SetCurItem( new_item );
-
-                    m_canvas->MoveCursorToCrossHair();
-
-                    // pick up the item and start moving
-                    PostCommandMenuEvent( move_cmd );
-                }
-            }
-        }
+    case ID_POPUP_PCB_DUPLICATE_ITEM_AND_INCREMENT:
+        DuplicateItems( true );
         break;
 
     case ID_POPUP_PCB_MOVE_EXACT:
@@ -888,6 +854,49 @@ void FOOTPRINT_EDIT_FRAME::Process_Special_Functions( wxCommandEvent& event )
 
     if( redraw )
         m_canvas->Refresh();
+}
+
+
+void FOOTPRINT_EDIT_FRAME::DuplicateItems( bool aIncrement )
+{
+    SaveCopyInUndoList( GetBoard()->m_Modules, UR_MODEDIT );
+
+    BOARD_ITEM* item = GetScreen()->GetCurItem();
+    MODULE* module = static_cast<MODULE*>( item->GetParent() );
+
+    int move_cmd = 0;
+
+    BOARD_ITEM* new_item = module->DuplicateAndAddItem(
+            item, aIncrement );
+
+    if( new_item )
+    {
+        switch( new_item->Type() )
+        {
+        case PCB_PAD_T:
+            move_cmd = ID_POPUP_PCB_MOVE_PAD_REQUEST;
+            break;
+        case PCB_MODULE_TEXT_T:
+            move_cmd = ID_POPUP_PCB_MOVE_TEXTMODULE_REQUEST;
+            break;
+        case PCB_MODULE_EDGE_T:
+            move_cmd = ID_POPUP_PCB_MOVE_EDGE;
+            break;
+        default:
+            break;
+        }
+
+        if( move_cmd )
+        {
+            SetMsgPanel( new_item );
+            SetCurItem( new_item );
+
+            m_canvas->MoveCursorToCrossHair();
+
+            // pick up the item and start moving
+            PostCommandMenuEvent( move_cmd );
+        }
+    }
 }
 
 

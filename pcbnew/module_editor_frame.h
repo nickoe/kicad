@@ -134,7 +134,7 @@ public:
     bool OnHotkeyMoveItem( int aIdCommand );
     bool OnHotkeyMoveItemExact();
     bool OnHotkeyRotateItem( int aIdCommand );
-    bool OnHotkeyDuplicateItem();
+    bool OnHotkeyDuplicateItem( int aIdCommand );
 
     /**
      * Function Show3D_Frame
@@ -452,6 +452,14 @@ protected:
 
     void restoreLastFootprint();
     void retainLastFootprint();
+
+private:
+
+    /**
+     * Duplicate the item under the cursor
+     * @param aIncrement increment the number of pad (if that is what is selected)
+     */
+    void DuplicateItems( bool aIncrement );
 };
 
 #endif      // MODULE_EDITOR_FRAME_H_
