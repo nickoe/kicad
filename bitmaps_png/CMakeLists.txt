@@ -168,6 +168,7 @@ set( BMAPS_MID
     browse_files
     cancel
     change_entry_orient
+    contrast_mode
     create_cmp_file
     checked_ok
     component_select_unit
@@ -256,11 +257,9 @@ set( BMAPS_MID
     gbr_select_mode2
     gerber_file
     gerber_recent_files
-    gerber_open_dcode_file
     gerbview_show_negative_objects
     gerbview_drill_file
     gerbview_clear_layers
-    gerber_open_dcode_file
     gerbview_open_recent_drill_files
     general_deletions
     general_ratsnest
@@ -460,6 +459,8 @@ set( BMAPS_MID
     reload
     reset_text
     resize_sheet
+    rescue_pcbnew
+    revert_pcbnew
     right
     rotate_field
     rotate_glabel
@@ -554,6 +555,7 @@ set( BMAPS_BIG
     libedit_icon
     viewlibs_icon
     icon_pagelayout_editor
+    wizard_add_fplib_icon
     )
 
 
