@@ -117,7 +117,30 @@ private:
     void OnCancelClick( wxCommandEvent& event );
     void OnOkClick( wxCommandEvent& event );
 
-    void redraw();
+    void saveDialogOptions();
+
+    struct CREATE_ARRAY_DIALOG_ENTRIES
+    {
+        CREATE_ARRAY_DIALOG_ENTRIES():
+            m_optionsSet( false ),
+            m_arrayTypeTab( 0 )
+        {}
+
+        bool m_optionsSet;
+
+        wxString m_gridNx, m_gridNy,
+                 m_gridDx, m_gridDy,
+                 m_gridOffsetX, m_gridOffsetY,
+                 m_gridStaggerX, m_gridStaggerY,
+                 m_circCentreX, m_circCentreY,
+                 m_circAngle,
+                 m_circCount;
+
+        bool m_circRotate;
+        int m_arrayTypeTab;
+    };
+
+    static CREATE_ARRAY_DIALOG_ENTRIES m_options;
 };
 
 #endif      //  __DIALOG_CREATE_ARRAY__

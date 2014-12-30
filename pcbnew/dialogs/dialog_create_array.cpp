@@ -31,10 +31,35 @@
 
 #include "dialog_create_array.h"
 
+
+// initialise statics
+DIALOG_CREATE_ARRAY::CREATE_ARRAY_DIALOG_ENTRIES DIALOG_CREATE_ARRAY::m_options;
+
+
 DIALOG_CREATE_ARRAY::DIALOG_CREATE_ARRAY( PCB_BASE_FRAME* aParent, ARRAY_OPTIONS** settings ):
         DIALOG_CREATE_ARRAY_BASE( aParent ),
         m_settings( settings )
 {
+    if ( m_options.m_optionsSet )
+    {
+        // load persistent options
+        m_entryNx->SetValue( m_options.m_gridNx );
+        m_entryNy->SetValue( m_options.m_gridNy );
+        m_entryDx->SetValue( m_options.m_gridDx );
+        m_entryDy->SetValue( m_options.m_gridDy );
+        m_entryOffsetX->SetValue( m_options.m_gridOffsetX );
+        m_entryOffsetY->SetValue( m_options.m_gridOffsetY );
+        m_entryStaggerX->SetValue( m_options.m_gridStaggerX );
+        m_entryStaggerY->SetValue( m_options.m_gridStaggerY );
+
+        m_entryCentreX->SetValue( m_options.m_circCentreX );
+        m_entryCentreY->SetValue( m_options.m_circCentreY );
+        m_entryCircAngle->SetValue( m_options.m_circAngle );
+        m_entryCircCount->SetValue( m_options.m_circCount );
+        m_entryRotateItemsCb->SetValue( m_options.m_circRotate );
+
+        m_gridTypeNotebook->SetSelection( m_options.m_arrayTypeTab );
+    }
 }
 
 
@@ -42,6 +67,7 @@ void DIALOG_CREATE_ARRAY::OnParameterChanged( wxCommandEvent& event )
 {
    event.Skip();
 }
+
 
 void DIALOG_CREATE_ARRAY::OnCancelClick( wxCommandEvent& event )
 {
@@ -115,16 +141,19 @@ void DIALOG_CREATE_ARRAY::OnOkClick( wxCommandEvent& event )
         // assign pointer and ownership here
         *m_settings = newSettings;
 
+        saveDialogOptions();
+
         EndModal( CREATE_ARRAY_OK );
     }
  }
 
-// ARRAY OPTION implementation functions
+// ARRAY OPTION implementation functions --------------------------------------
 
 int DIALOG_CREATE_ARRAY::ARRAY_GRID_OPTIONS::GetArraySize() const
 {
     return n_x * n_y;
 }
+
 
 void DIALOG_CREATE_ARRAY::ARRAY_GRID_OPTIONS::TransformItem( int n, BOARD_ITEM* item ) const
 {
@@ -160,6 +189,7 @@ int DIALOG_CREATE_ARRAY::ARRAY_CIRCULAR_OPTIONS::GetArraySize() const
     return n_pts;
 }
 
+
 void DIALOG_CREATE_ARRAY::ARRAY_CIRCULAR_OPTIONS::TransformItem( int n, BOARD_ITEM* item ) const
 {
     const double angle = d_angle * n * 10;
@@ -171,4 +201,27 @@ void DIALOG_CREATE_ARRAY::ARRAY_CIRCULAR_OPTIONS::TransformItem( int n, BOARD_IT
     {
         item->Rotate( item->GetCenter(), -angle);
     }
+}
+
+void DIALOG_CREATE_ARRAY::saveDialogOptions()
+{
+    m_options.m_gridNx = m_entryNx->GetValue();
+    m_options.m_gridNy = m_entryNy->GetValue();
+    m_options.m_gridDx = m_entryDx->GetValue();
+    m_options.m_gridDy = m_entryDy->GetValue();
+    m_options.m_gridOffsetX = m_entryOffsetX->GetValue();
+    m_options.m_gridOffsetY = m_entryOffsetY->GetValue();
+    m_options.m_gridStaggerX = m_entryStaggerX->GetValue();
+    m_options.m_gridStaggerY = m_entryStaggerY->GetValue();
+
+    m_options.m_circCentreY = m_entryCentreY->GetValue();
+    m_options.m_circCentreX = m_entryCentreX->GetValue();
+    m_options.m_circAngle = m_entryCircAngle->GetValue();
+    m_options.m_circCount = m_entryCircCount->GetValue();
+    m_options.m_circRotate = m_entryRotateItemsCb->GetValue();
+
+    m_options.m_arrayTypeTab = m_gridTypeNotebook->GetSelection();
+
+    // next time, we'll have valid options
+    m_options.m_optionsSet = true;
 }
