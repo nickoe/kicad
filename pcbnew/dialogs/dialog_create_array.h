@@ -72,14 +72,19 @@ public:
     {
         ARRAY_GRID_OPTIONS():
             ARRAY_OPTIONS( ARRAY_GRID ),
-            n_x( 0 ), n_y( 0 ),
-            stagger_x( 0 ), stagger_y( 0 )
+            m_nx( 0 ), m_ny( 0 ),
+            m_horizontalThenVertical( true ),
+            m_reverseNumberingAlternate( false ),
+            m_stagger( 0 ),
+            m_stagger_rows( true )
         {}
 
-        long n_x, n_y;
-        wxPoint delta;
-        wxPoint offset;
-        long stagger_x, stagger_y;
+        long m_nx, m_ny;
+        bool m_horizontalThenVertical, m_reverseNumberingAlternate;
+        wxPoint m_delta;
+        wxPoint m_offset;
+        long m_stagger;
+        bool m_stagger_rows;
 
         void TransformItem( int n, BOARD_ITEM* item, const wxPoint& rotPoint ) const; // override virtual
         int GetArraySize() const; // override virtual
@@ -123,6 +128,10 @@ private:
     {
         CREATE_ARRAY_DIALOG_ENTRIES():
             m_optionsSet( false ),
+            m_gridStaggerType( 0 ),
+            m_gridNumberingAxis( 0 ),
+            m_gridNumberingReverseAlternate( false ),
+            m_circRotate( false ),
             m_arrayTypeTab( 0 )
         {}
 
@@ -131,11 +140,13 @@ private:
         wxString m_gridNx, m_gridNy,
                  m_gridDx, m_gridDy,
                  m_gridOffsetX, m_gridOffsetY,
-                 m_gridStaggerX, m_gridStaggerY,
+                 m_gridStagger,
                  m_circCentreX, m_circCentreY,
                  m_circAngle,
                  m_circCount;
 
+        int m_gridStaggerType, m_gridNumberingAxis;
+        bool m_gridNumberingReverseAlternate;
         bool m_circRotate;
         int m_arrayTypeTab;
     };

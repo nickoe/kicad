@@ -49,8 +49,11 @@ DIALOG_CREATE_ARRAY::DIALOG_CREATE_ARRAY( PCB_BASE_FRAME* aParent, ARRAY_OPTIONS
         m_entryDy->SetValue( m_options.m_gridDy );
         m_entryOffsetX->SetValue( m_options.m_gridOffsetX );
         m_entryOffsetY->SetValue( m_options.m_gridOffsetY );
-        m_entryStaggerX->SetValue( m_options.m_gridStaggerX );
-        m_entryStaggerY->SetValue( m_options.m_gridStaggerY );
+        m_entryStagger->SetValue( m_options.m_gridStagger );
+        m_radioBoxGridStaggerType->SetSelection( m_options.m_gridStaggerType );
+
+        m_radioBoxGridNumberingAxis->SetSelection( m_options.m_gridNumberingAxis );
+        m_checkBoxGridReverseNumbering->SetValue( m_options.m_gridNumberingReverseAlternate );
 
         m_entryCentreX->SetValue( m_options.m_circCentreX );
         m_entryCentreY->SetValue( m_options.m_circCentreY );
@@ -59,6 +62,18 @@ DIALOG_CREATE_ARRAY::DIALOG_CREATE_ARRAY( PCB_BASE_FRAME* aParent, ARRAY_OPTIONS
         m_entryRotateItemsCb->SetValue( m_options.m_circRotate );
 
         m_gridTypeNotebook->SetSelection( m_options.m_arrayTypeTab );
+    }
+
+    // load units into labels
+    {
+        const wxString lengthUnit = GetAbbreviatedUnitsLabel( g_UserUnit );
+
+        m_unitLabelCentreX->SetLabelText( lengthUnit );
+        m_unitLabelCentreY->SetLabelText( lengthUnit );
+        m_unitLabelDx->SetLabelText( lengthUnit );
+        m_unitLabelDy->SetLabelText( lengthUnit );
+        m_unitLabelOffsetX->SetLabelText( lengthUnit );
+        m_unitLabelOffsetY->SetLabelText( lengthUnit );
     }
 }
 
@@ -88,24 +103,27 @@ void DIALOG_CREATE_ARRAY::OnOkClick( wxCommandEvent& event )
         double x, y;
 
         // ints
-        ok = ok && m_entryNx->GetValue().ToLong( &newGrid->n_x );
-        ok = ok && m_entryNy->GetValue().ToLong( &newGrid->n_y );
-
+        ok = ok && m_entryNx->GetValue().ToLong( &newGrid->m_nx );
+        ok = ok && m_entryNy->GetValue().ToLong( &newGrid->m_ny );
 
         ok = ok && m_entryDx->GetValue().ToDouble( &x );
         ok = ok && m_entryDy->GetValue().ToDouble( &y );
 
-        newGrid->delta.x = From_User_Unit( g_UserUnit, x );
-        newGrid->delta.y = From_User_Unit( g_UserUnit, y );
+        newGrid->m_delta.x = From_User_Unit( g_UserUnit, x );
+        newGrid->m_delta.y = From_User_Unit( g_UserUnit, y );
 
         ok = ok && m_entryOffsetX->GetValue().ToDouble( &x );
         ok = ok && m_entryOffsetY->GetValue().ToDouble( &y );
 
-        newGrid->offset.x = From_User_Unit( g_UserUnit, x );
-        newGrid->offset.y = From_User_Unit( g_UserUnit, y );
+        newGrid->m_offset.x = From_User_Unit( g_UserUnit, x );
+        newGrid->m_offset.y = From_User_Unit( g_UserUnit, y );
 
-        ok = ok && m_entryStaggerX->GetValue().ToLong( &newGrid->stagger_x );
-        ok = ok && m_entryStaggerY->GetValue().ToLong( &newGrid->stagger_y );
+        ok = ok && m_entryStagger->GetValue().ToLong( &newGrid->m_stagger );
+
+        newGrid->m_stagger_rows = m_radioBoxGridStaggerType->GetSelection() == 0;
+
+        newGrid->m_horizontalThenVertical = m_radioBoxGridNumberingAxis->GetSelection() == 0;
+        newGrid->m_reverseNumberingAlternate = m_checkBoxGridReverseNumbering->GetValue();
 
         // Only use settings if all values are good
         if ( ok )
@@ -151,7 +169,7 @@ void DIALOG_CREATE_ARRAY::OnOkClick( wxCommandEvent& event )
 
 int DIALOG_CREATE_ARRAY::ARRAY_GRID_OPTIONS::GetArraySize() const
 {
-    return n_x * n_y;
+    return m_nx * m_ny;
 }
 
 void DIALOG_CREATE_ARRAY::ARRAY_GRID_OPTIONS::TransformItem( int n, BOARD_ITEM* item,
@@ -159,25 +177,33 @@ void DIALOG_CREATE_ARRAY::ARRAY_GRID_OPTIONS::TransformItem( int n, BOARD_ITEM* 
 {
     wxPoint point;
 
-    // left-to-right, top-to-bottom
-    const int x = n % n_x;
-    const int y = n / n_x;
+    const int axisSize = m_horizontalThenVertical ? m_nx : m_ny;
 
-    point.x = x * delta.x + y * offset.x;
-    point.y = y * delta.y + x * offset.y;
+    int x = n % axisSize;
+    int y = n / axisSize;
 
-    if(stagger_y > 1)
+    // reverse on this row/col?
+    if( m_reverseNumberingAlternate && ( y % 2 ) )
+        x = axisSize - x - 1;
+
+    // swap axes if needed
+    if( !m_horizontalThenVertical )
+        std::swap( x, y );
+
+    point.x = x * m_delta.x + y * m_offset.x;
+    point.y = y * m_delta.y + x * m_offset.y;
+
+    if( abs( m_stagger ) > 1 )
     {
-        const int stagger_idx = ( y % stagger_y );
-        point.x += ( delta.x / stagger_y) * stagger_idx;
-        point.y += ( offset.y / stagger_y) * stagger_idx;
-    }
+        const int stagger = abs( m_stagger );
+        const bool sr = m_stagger_rows;
+        const int stagger_idx = ( ( sr ? y : x ) % stagger );
 
-    if(stagger_x > 1)
-    {
-        const int stagger_idx = ( x % stagger_x );
-        point.y += ( delta.y / stagger_x) * stagger_idx;
-        point.x += (offset.x / stagger_x ) * stagger_idx;
+        wxPoint stagger_delta( ( sr ? m_delta.x : m_offset.x ),
+                               ( sr ? m_offset.y : m_delta.y ) );
+
+        // Stagger to the left/up if the sign of the stagger is negative
+        point += stagger_delta * copysign( stagger_idx, m_stagger ) / stagger;
     }
 
     // this is already relative to the first array entry
@@ -212,8 +238,11 @@ void DIALOG_CREATE_ARRAY::saveDialogOptions()
     m_options.m_gridDy = m_entryDy->GetValue();
     m_options.m_gridOffsetX = m_entryOffsetX->GetValue();
     m_options.m_gridOffsetY = m_entryOffsetY->GetValue();
-    m_options.m_gridStaggerX = m_entryStaggerX->GetValue();
-    m_options.m_gridStaggerY = m_entryStaggerY->GetValue();
+    m_options.m_gridStagger = m_entryStagger->GetValue();
+    m_options.m_gridStaggerType = m_radioBoxGridStaggerType->GetSelection();
+
+    m_options.m_gridNumberingAxis = m_radioBoxGridNumberingAxis->GetSelection();
+    m_options.m_gridNumberingReverseAlternate = m_checkBoxGridReverseNumbering->GetValue();
 
     m_options.m_circCentreY = m_entryCentreY->GetValue();
     m_options.m_circCentreX = m_entryCentreX->GetValue();

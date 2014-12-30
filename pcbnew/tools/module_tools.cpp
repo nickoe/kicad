@@ -623,12 +623,13 @@ int MODULE_TOOLS::CreateArray( TOOL_EVENT& aEvent )
 
             for( unsigned ptN = 1; ptN < nPoints; ++ptN )
             {
-                BOARD_ITEM* newItem = module->DuplicateAndAddItem( item, true );
+                if ( BOARD_ITEM* newItem = module->DuplicateAndAddItem( item, true ) )
+                {
+                    array_opts->TransformItem( ptN, newItem, rotPoint );
 
-                array_opts->TransformItem( ptN, newItem, rotPoint );
-
-                m_toolMgr->RunAction( COMMON_ACTIONS::unselectItem, true, newItem );
-                m_view->Add( newItem );
+                    m_toolMgr->RunAction( COMMON_ACTIONS::unselectItem, true, newItem );
+                    m_view->Add( newItem );
+                }
             }
         }
 

@@ -21,12 +21,14 @@ class DIALOG_SHIM;
 #include <wx/colour.h>
 #include <wx/settings.h>
 #include <wx/textctrl.h>
+#include <wx/radiobox.h>
+#include <wx/gbsizer.h>
+#include <wx/checkbox.h>
 #include <wx/sizer.h>
 #include <wx/panel.h>
 #include <wx/bitmap.h>
 #include <wx/image.h>
 #include <wx/icon.h>
-#include <wx/checkbox.h>
 #include <wx/notebook.h>
 #include <wx/button.h>
 #include <wx/dialog.h>
@@ -47,10 +49,8 @@ class DIALOG_CREATE_ARRAY_BASE : public DIALOG_SHIM
 		wxPanel* m_gridPanel;
 		wxStaticText* m_labelNx;
 		wxTextCtrl* m_entryNx;
-		wxStaticText* m_staticText15;
 		wxStaticText* m_labelNy;
 		wxTextCtrl* m_entryNy;
-		wxStaticText* m_staticText16;
 		wxStaticText* m_labelDx;
 		wxTextCtrl* m_entryDx;
 		wxStaticText* m_unitLabelDx;
@@ -63,12 +63,12 @@ class DIALOG_CREATE_ARRAY_BASE : public DIALOG_SHIM
 		wxStaticText* m_labelOffsetY;
 		wxTextCtrl* m_entryOffsetY;
 		wxStaticText* m_unitLabelOffsetY;
-		wxStaticText* m_labelStaggerX;
-		wxTextCtrl* m_entryStaggerX;
-		wxStaticText* m_staticText30;
-		wxStaticText* m_labelStaggerY;
-		wxTextCtrl* m_entryStaggerY;
-		wxStaticText* m_staticText32;
+		wxStaticText* m_labelStagger;
+		wxTextCtrl* m_entryStagger;
+		wxRadioBox* m_radioBoxGridStaggerType;
+		wxStaticText* m_labelGridStaggerType;
+		wxRadioBox* m_radioBoxGridNumberingAxis;
+		wxCheckBox* m_checkBoxGridReverseNumbering;
 		wxPanel* m_circularPanel;
 		wxStaticText* m_labelCentreX;
 		wxTextCtrl* m_entryCentreX;
@@ -81,8 +81,7 @@ class DIALOG_CREATE_ARRAY_BASE : public DIALOG_SHIM
 		wxStaticText* m_unitLabelCircAngle;
 		wxStaticText* m_labelCircCount;
 		wxTextCtrl* m_entryCircCount;
-		wxStaticText* m_staticText24;
-		wxStaticText* m_staticText25;
+		wxStaticText* m_labelCircRotate;
 		wxCheckBox* m_entryRotateItemsCb;
 		wxStdDialogButtonSizer* m_stdButtons;
 		wxButton* m_stdButtonsOK;
@@ -97,7 +96,7 @@ class DIALOG_CREATE_ARRAY_BASE : public DIALOG_SHIM
 	
 	public:
 		
-		DIALOG_CREATE_ARRAY_BASE( wxWindow* parent, wxWindowID id = wxID_DIALOG_CREATE_ARRAY, const wxString& title = _("Create array"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 245,398 ), long style = wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER ); 
+		DIALOG_CREATE_ARRAY_BASE( wxWindow* parent, wxWindowID id = wxID_DIALOG_CREATE_ARRAY, const wxString& title = _("Create array"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 419,436 ), long style = wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER ); 
 		~DIALOG_CREATE_ARRAY_BASE();
 	
 };
