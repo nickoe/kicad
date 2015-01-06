@@ -24,6 +24,7 @@ class DIALOG_SHIM;
 #include <wx/radiobox.h>
 #include <wx/gbsizer.h>
 #include <wx/checkbox.h>
+#include <wx/choice.h>
 #include <wx/sizer.h>
 #include <wx/panel.h>
 #include <wx/bitmap.h>
@@ -69,6 +70,15 @@ class DIALOG_CREATE_ARRAY_BASE : public DIALOG_SHIM
 		wxStaticText* m_labelGridStaggerType;
 		wxRadioBox* m_radioBoxGridNumberingAxis;
 		wxCheckBox* m_checkBoxGridReverseNumbering;
+		wxCheckBox* m_checkBoxGridRestartNumbering;
+		wxRadioBox* m_radioBoxGridNumberingScheme;
+		wxStaticText* m_labelPriAxisNumbering;
+		wxChoice* m_choicePriAxisNumbering;
+		wxStaticText* m_labelSecAxisNumbering;
+		wxChoice* m_choiceSecAxisNumbering;
+		wxStaticText* m_labelGridNumberingOffset;
+		wxTextCtrl* m_entryGridPriNumberingOffset;
+		wxTextCtrl* m_entryGridSecNumberingOffset;
 		wxPanel* m_circularPanel;
 		wxStaticText* m_labelCentreX;
 		wxTextCtrl* m_entryCentreX;
@@ -96,7 +106,7 @@ class DIALOG_CREATE_ARRAY_BASE : public DIALOG_SHIM
 	
 	public:
 		
-		DIALOG_CREATE_ARRAY_BASE( wxWindow* parent, wxWindowID id = wxID_DIALOG_CREATE_ARRAY, const wxString& title = _("Create array"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 419,436 ), long style = wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER ); 
+		DIALOG_CREATE_ARRAY_BASE( wxWindow* parent, wxWindowID id = wxID_DIALOG_CREATE_ARRAY, const wxString& title = _("Create array"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 576,528 ), long style = wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER ); 
 		~DIALOG_CREATE_ARRAY_BASE();
 	
 };

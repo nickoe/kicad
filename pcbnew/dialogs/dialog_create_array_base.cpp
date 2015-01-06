@@ -111,10 +111,58 @@ DIALOG_CREATE_ARRAY_BASE::DIALOG_CREATE_ARRAY_BASE( wxWindow* parent, wxWindowID
 	int m_radioBoxGridNumberingAxisNChoices = sizeof( m_radioBoxGridNumberingAxisChoices ) / sizeof( wxString );
 	m_radioBoxGridNumberingAxis = new wxRadioBox( m_gridPanel, wxID_ANY, _("Numbering direction:"), wxDefaultPosition, wxDefaultSize, m_radioBoxGridNumberingAxisNChoices, m_radioBoxGridNumberingAxisChoices, 1, wxRA_SPECIFY_COLS );
 	m_radioBoxGridNumberingAxis->SetSelection( 0 );
-	bSizer3->Add( m_radioBoxGridNumberingAxis, 0, wxALL, 5 );
+	bSizer3->Add( m_radioBoxGridNumberingAxis, 0, wxALL|wxEXPAND, 5 );
 	
-	m_checkBoxGridReverseNumbering = new wxCheckBox( m_gridPanel, wxID_ANY, _("Reverse numbering on \nalternate rows/colums"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_checkBoxGridReverseNumbering = new wxCheckBox( m_gridPanel, wxID_ANY, _("Reverse numbering on \nalternate rows/columns"), wxDefaultPosition, wxDefaultSize, 0 );
 	bSizer3->Add( m_checkBoxGridReverseNumbering, 0, wxALL, 5 );
+	
+	m_checkBoxGridRestartNumbering = new wxCheckBox( m_gridPanel, wxID_ANY, _("Restart numbering"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_checkBoxGridRestartNumbering->SetValue(true); 
+	bSizer3->Add( m_checkBoxGridRestartNumbering, 0, wxALL, 5 );
+	
+	wxString m_radioBoxGridNumberingSchemeChoices[] = { _("Continuous (1, 2, 3...)"), _("Co-ordinate (A1, A2, ... B1, ...)") };
+	int m_radioBoxGridNumberingSchemeNChoices = sizeof( m_radioBoxGridNumberingSchemeChoices ) / sizeof( wxString );
+	m_radioBoxGridNumberingScheme = new wxRadioBox( m_gridPanel, wxID_ANY, _("Numbering scheme:"), wxDefaultPosition, wxDefaultSize, m_radioBoxGridNumberingSchemeNChoices, m_radioBoxGridNumberingSchemeChoices, 1, wxRA_SPECIFY_COLS );
+	m_radioBoxGridNumberingScheme->SetSelection( 0 );
+	bSizer3->Add( m_radioBoxGridNumberingScheme, 0, wxALL|wxEXPAND, 5 );
+	
+	m_labelPriAxisNumbering = new wxStaticText( m_gridPanel, wxID_ANY, _("Primary axis numbering:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_labelPriAxisNumbering->Wrap( -1 );
+	bSizer3->Add( m_labelPriAxisNumbering, 0, wxALL, 5 );
+	
+	wxArrayString m_choicePriAxisNumberingChoices;
+	m_choicePriAxisNumbering = new wxChoice( m_gridPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_choicePriAxisNumberingChoices, 0 );
+	m_choicePriAxisNumbering->SetSelection( 0 );
+	bSizer3->Add( m_choicePriAxisNumbering, 0, wxALL|wxEXPAND, 5 );
+	
+	m_labelSecAxisNumbering = new wxStaticText( m_gridPanel, wxID_ANY, _("Secondary axis numbering:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_labelSecAxisNumbering->Wrap( -1 );
+	m_labelSecAxisNumbering->Enable( false );
+	
+	bSizer3->Add( m_labelSecAxisNumbering, 0, wxALL, 5 );
+	
+	wxArrayString m_choiceSecAxisNumberingChoices;
+	m_choiceSecAxisNumbering = new wxChoice( m_gridPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_choiceSecAxisNumberingChoices, 0 );
+	m_choiceSecAxisNumbering->SetSelection( 0 );
+	m_choiceSecAxisNumbering->Enable( false );
+	
+	bSizer3->Add( m_choiceSecAxisNumbering, 0, wxALL|wxEXPAND, 5 );
+	
+	wxBoxSizer* bSizer5;
+	bSizer5 = new wxBoxSizer( wxHORIZONTAL );
+	
+	m_labelGridNumberingOffset = new wxStaticText( m_gridPanel, wxID_ANY, _("Numbering start:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_labelGridNumberingOffset->Wrap( -1 );
+	bSizer5->Add( m_labelGridNumberingOffset, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+	
+	m_entryGridPriNumberingOffset = new wxTextCtrl( m_gridPanel, wxID_ANY, _("1"), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer5->Add( m_entryGridPriNumberingOffset, 0, wxALL, 5 );
+	
+	m_entryGridSecNumberingOffset = new wxTextCtrl( m_gridPanel, wxID_ANY, _("1"), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer5->Add( m_entryGridSecNumberingOffset, 0, wxALL, 5 );
+	
+	
+	bSizer3->Add( bSizer5, 0, wxEXPAND, 5 );
 	
 	
 	bSizer2->Add( bSizer3, 1, wxEXPAND, 5 );
@@ -159,8 +207,8 @@ DIALOG_CREATE_ARRAY_BASE::DIALOG_CREATE_ARRAY_BASE( wxWindow* parent, wxWindowID
 	m_labelCircAngle->Wrap( -1 );
 	gbSizer2->Add( m_labelCircAngle, wxGBPosition( 2, 0 ), wxGBSpan( 1, 1 ), wxALL|wxALIGN_CENTER_VERTICAL|wxALIGN_RIGHT, 5 );
 	
-	m_entryCircAngle = new wxTextCtrl( m_circularPanel, wxID_ANY, _("90"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_entryCircAngle->SetToolTip( _("Positive angles represent an anti-clockwise rotation") );
+	m_entryCircAngle = new wxTextCtrl( m_circularPanel, wxID_ANY, _("0"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_entryCircAngle->SetToolTip( _("Positive angles represent an anti-clockwise rotation. An angle of 0 will produce a full circle divided evenly into \"Count\" portions.") );
 	
 	gbSizer2->Add( m_entryCircAngle, wxGBPosition( 2, 1 ), wxGBSpan( 1, 1 ), wxALL, 5 );
 	
@@ -173,7 +221,7 @@ DIALOG_CREATE_ARRAY_BASE::DIALOG_CREATE_ARRAY_BASE( wxWindow* parent, wxWindowID
 	gbSizer2->Add( m_labelCircCount, wxGBPosition( 3, 0 ), wxGBSpan( 1, 1 ), wxALL|wxALIGN_CENTER_VERTICAL|wxALIGN_RIGHT, 5 );
 	
 	m_entryCircCount = new wxTextCtrl( m_circularPanel, wxID_ANY, _("4"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_entryCircCount->SetToolTip( _("A count of \"0\" gives as many as fit in a full circle") );
+	m_entryCircCount->SetToolTip( _("How many items in the array.") );
 	
 	gbSizer2->Add( m_entryCircCount, wxGBPosition( 3, 1 ), wxGBSpan( 1, 1 ), wxALL, 5 );
 	
@@ -196,7 +244,7 @@ DIALOG_CREATE_ARRAY_BASE::DIALOG_CREATE_ARRAY_BASE( wxWindow* parent, wxWindowID
 	bSizer4->Fit( m_circularPanel );
 	m_gridTypeNotebook->AddPage( m_circularPanel, _("Circular"), false );
 	
-	bMainSizer->Add( m_gridTypeNotebook, 0, wxEXPAND | wxALL, 5 );
+	bMainSizer->Add( m_gridTypeNotebook, 1, wxEXPAND | wxALL, 5 );
 	
 	m_stdButtons = new wxStdDialogButtonSizer();
 	m_stdButtonsOK = new wxButton( this, wxID_OK );
@@ -220,6 +268,8 @@ DIALOG_CREATE_ARRAY_BASE::DIALOG_CREATE_ARRAY_BASE( wxWindow* parent, wxWindowID
 	m_entryOffsetX->Connect( wxEVT_COMMAND_TEXT_ENTER, wxCommandEventHandler( DIALOG_CREATE_ARRAY_BASE::OnParameterChanged ), NULL, this );
 	m_entryOffsetY->Connect( wxEVT_COMMAND_TEXT_ENTER, wxCommandEventHandler( DIALOG_CREATE_ARRAY_BASE::OnParameterChanged ), NULL, this );
 	m_entryStagger->Connect( wxEVT_COMMAND_TEXT_ENTER, wxCommandEventHandler( DIALOG_CREATE_ARRAY_BASE::OnParameterChanged ), NULL, this );
+	m_checkBoxGridRestartNumbering->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( DIALOG_CREATE_ARRAY_BASE::OnParameterChanged ), NULL, this );
+	m_radioBoxGridNumberingScheme->Connect( wxEVT_COMMAND_RADIOBOX_SELECTED, wxCommandEventHandler( DIALOG_CREATE_ARRAY_BASE::OnParameterChanged ), NULL, this );
 	m_entryCentreX->Connect( wxEVT_COMMAND_TEXT_ENTER, wxCommandEventHandler( DIALOG_CREATE_ARRAY_BASE::OnParameterChanged ), NULL, this );
 	m_entryCentreY->Connect( wxEVT_COMMAND_TEXT_ENTER, wxCommandEventHandler( DIALOG_CREATE_ARRAY_BASE::OnParameterChanged ), NULL, this );
 	m_entryCircAngle->Connect( wxEVT_COMMAND_TEXT_ENTER, wxCommandEventHandler( DIALOG_CREATE_ARRAY_BASE::OnParameterChanged ), NULL, this );
@@ -239,6 +289,8 @@ DIALOG_CREATE_ARRAY_BASE::~DIALOG_CREATE_ARRAY_BASE()
 	m_entryOffsetX->Disconnect( wxEVT_COMMAND_TEXT_ENTER, wxCommandEventHandler( DIALOG_CREATE_ARRAY_BASE::OnParameterChanged ), NULL, this );
 	m_entryOffsetY->Disconnect( wxEVT_COMMAND_TEXT_ENTER, wxCommandEventHandler( DIALOG_CREATE_ARRAY_BASE::OnParameterChanged ), NULL, this );
 	m_entryStagger->Disconnect( wxEVT_COMMAND_TEXT_ENTER, wxCommandEventHandler( DIALOG_CREATE_ARRAY_BASE::OnParameterChanged ), NULL, this );
+	m_checkBoxGridRestartNumbering->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( DIALOG_CREATE_ARRAY_BASE::OnParameterChanged ), NULL, this );
+	m_radioBoxGridNumberingScheme->Disconnect( wxEVT_COMMAND_RADIOBOX_SELECTED, wxCommandEventHandler( DIALOG_CREATE_ARRAY_BASE::OnParameterChanged ), NULL, this );
 	m_entryCentreX->Disconnect( wxEVT_COMMAND_TEXT_ENTER, wxCommandEventHandler( DIALOG_CREATE_ARRAY_BASE::OnParameterChanged ), NULL, this );
 	m_entryCentreY->Disconnect( wxEVT_COMMAND_TEXT_ENTER, wxCommandEventHandler( DIALOG_CREATE_ARRAY_BASE::OnParameterChanged ), NULL, this );
 	m_entryCircAngle->Disconnect( wxEVT_COMMAND_TEXT_ENTER, wxCommandEventHandler( DIALOG_CREATE_ARRAY_BASE::OnParameterChanged ), NULL, this );

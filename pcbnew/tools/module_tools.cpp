@@ -621,14 +621,31 @@ int MODULE_TOOLS::CreateArray( TOOL_EVENT& aEvent )
             // skip the first one - we already have that object
             const unsigned nPoints = array_opts->GetArraySize();
 
-            for( unsigned ptN = 1; ptN < nPoints; ++ptN )
+            for( unsigned ptN = 0; ptN < nPoints; ++ptN )
             {
-                if ( BOARD_ITEM* newItem = module->DuplicateAndAddItem( item, true ) )
-                {
-                    array_opts->TransformItem( ptN, newItem, rotPoint );
+                BOARD_ITEM* newItem = NULL;
 
-                    m_toolMgr->RunAction( COMMON_ACTIONS::unselectItem, true, newItem );
-                    m_view->Add( newItem );
+                if( ptN == 0 )
+                {
+                    newItem = item;
+                }
+                else
+                {
+                    newItem = module->DuplicateAndAddItem( item, true );
+
+                    if( newItem )
+                    {
+                        array_opts->TransformItem( ptN, newItem, rotPoint );
+
+                        m_toolMgr->RunAction( COMMON_ACTIONS::unselectItem, true, newItem );
+                        m_view->Add( newItem );
+                    }
+                }
+
+                // set the number if needed:
+                if ( newItem->Type() == PCB_PAD_T )
+                {
+                    static_cast<D_PAD*>( newItem )->SetPadName( array_opts->GetItemNumber( ptN ) );
                 }
             }
         }
