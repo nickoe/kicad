@@ -105,7 +105,7 @@ protected:
                 break;
 
             case CFG_CTRL_TEXT:
-                *(wxString*) iter->dest = static_cast<wxTextCtrl*>( iter->control )->GetValue();
+                *(std::string*) iter->dest = static_cast<wxTextCtrl*>( iter->control )->GetValue();
                 break;
 
             case CFG_CTRL_CHOICE:
@@ -144,7 +144,7 @@ protected:
                 break;
 
             case CFG_CTRL_TEXT:
-                static_cast<wxTextCtrl*>( iter->control )->SetValue( *(wxString*) iter->dest );
+                static_cast<wxTextCtrl*>( iter->control )->SetValue( *(std::string*) iter->dest );
                 break;
 
             case CFG_CTRL_CHOICE:
@@ -204,13 +204,15 @@ public:
      */
     struct ARRAY_OPTIONS
     {
-        ARRAY_OPTIONS( ARRAY_TYPE_T type_ ) :
-            type( type_ )
+        ARRAY_OPTIONS( ARRAY_TYPE_T aType ) :
+            m_type( aType ),
+            m_shouldRenumber( false )
         {}
 
         virtual ~ARRAY_OPTIONS() {};
 
-        ARRAY_TYPE_T type;
+        ARRAY_TYPE_T m_type;
+        bool m_shouldRenumber;
 
         /*!
          * Function GetArrayPositions
@@ -222,10 +224,15 @@ public:
         virtual void TransformItem( int n, BOARD_ITEM* item,
                 const wxPoint& rotPoint ) const = 0;
         virtual int         GetArraySize() const = 0;
-        virtual wxString    GetItemNumber( int n ) const = 0;
+        virtual std::string GetItemNumber( int n ) const = 0;
+
+        bool        ShouldRenumberItems() const
+        {
+            return m_shouldRenumber;
+        }
 
 protected:
-        static wxString getCoordinateNumber( int n, ARRAY_NUMBERING_TYPE_T type );
+        static std::string getCoordinateNumber( int n, ARRAY_NUMBERING_TYPE_T type );
     };
 
     struct ARRAY_GRID_OPTIONS : public ARRAY_OPTIONS
@@ -256,7 +263,7 @@ protected:
 
         void        TransformItem( int n, BOARD_ITEM* item, const wxPoint& rotPoint ) const;    // override virtual
         int         GetArraySize() const;                                                       // override virtual
-        wxString    GetItemNumber( int n ) const;                                               // override virtual
+        std::string GetItemNumber( int n ) const;                                               // override virtual
 
 private:
         wxPoint getGridCoords( int n ) const;
@@ -280,7 +287,7 @@ private:
 
         void        TransformItem( int n, BOARD_ITEM* item, const wxPoint& rotPoint ) const;    // override virtual
         int         GetArraySize() const;                                                       // override virtual
-        wxString    GetItemNumber( int n ) const;                                               // override virtual
+        std::string GetItemNumber( int n ) const;                                               // override virtual
     };
 
     // Constructor and destructor

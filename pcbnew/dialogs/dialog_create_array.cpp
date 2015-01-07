@@ -260,6 +260,8 @@ void DIALOG_CREATE_ARRAY::OnOkClick( wxCommandEvent& event )
                     m_entryGridSecNumberingOffset->GetValue().ToStdString(),
                     newGrid->m_secAxisNumType, newGrid->m_numberingOffsetY );
 
+        newGrid->m_shouldRenumber = m_checkBoxGridRestartNumbering->GetValue();
+
         // Only use settings if all values are good
         if( ok )
             newSettings = newGrid;
@@ -280,6 +282,16 @@ void DIALOG_CREATE_ARRAY::OnOkClick( wxCommandEvent& event )
         ok  = ok && m_entryCircCount->GetValue().ToLong( &newCirc->m_nPts );
 
         newCirc->m_rotateItems = m_entryRotateItemsCb->GetValue();
+
+        newCirc->m_shouldRenumber = m_checkBoxCircRestartNumbering->GetValue();
+
+        // this is only correct if you set the choice up according to the enum size and order
+        ok = ok && m_choiceCircNumberingType->GetSelection() < NUMBERING_TYPE_Max;
+
+        // mind undefined casts to enums (should not be able to happen)
+        if( ok )
+            newCirc->m_numberingType =
+                (ARRAY_NUMBERING_TYPE_T) m_choiceCircNumberingType->GetSelection();
 
         // Only use settings if all values are good
         if( ok )
@@ -322,15 +334,20 @@ void DIALOG_CREATE_ARRAY::setControlEnablement()
     m_labelGridNumberingOffset->Enable( renumber );
     m_entryGridPriNumberingOffset->Enable( renumber );
     m_entryGridSecNumberingOffset->Enable( renumber && num2d );
+
+
+    // Circular array options
+    const bool circRenumber = m_checkBoxCircRestartNumbering->GetValue();
+    m_choiceCircNumberingType->Enable( circRenumber );
 }
 
 
 // ARRAY OPTION implementation functions --------------------------------------
 
-wxString DIALOG_CREATE_ARRAY::ARRAY_OPTIONS::getCoordinateNumber( int n,
+std::string DIALOG_CREATE_ARRAY::ARRAY_OPTIONS::getCoordinateNumber( int n,
         ARRAY_NUMBERING_TYPE_T type )
 {
-    wxString itemNum;
+    std::string itemNum;
     const std::string& alphabet = alphabetFromNumberingScheme( type );
 
     if( !alphabet.empty() )
@@ -346,7 +363,7 @@ wxString DIALOG_CREATE_ARRAY::ARRAY_OPTIONS::getCoordinateNumber( int n,
             if( nonUnitColsStartAt0 && !firstRound )
                 modN--;    // Start the "tens/hundreds/etc column" at "Ax", not "Bx"
 
-            itemNum.Prepend( alphabet[modN] );
+            itemNum.insert( 0, 1, alphabet[modN] );
 
             n /= radix;
             firstRound = false;
@@ -412,20 +429,20 @@ void DIALOG_CREATE_ARRAY::ARRAY_GRID_OPTIONS::TransformItem( int n, BOARD_ITEM* 
 }
 
 
-wxString DIALOG_CREATE_ARRAY::ARRAY_GRID_OPTIONS::GetItemNumber( int n ) const
+std::string DIALOG_CREATE_ARRAY::ARRAY_GRID_OPTIONS::GetItemNumber( int n ) const
 {
-    wxString itemNum;
+    std::string itemNum;
 
     if( m_2dArrayNumbering )
     {
         wxPoint coords = getGridCoords( n );
 
-        itemNum << getCoordinateNumber( coords.x + m_numberingOffsetX, m_priAxisNumType );
-        itemNum << getCoordinateNumber( coords.y + m_numberingOffsetY, m_secAxisNumType );
+        itemNum += getCoordinateNumber( coords.x + m_numberingOffsetX, m_priAxisNumType );
+        itemNum += getCoordinateNumber( coords.y + m_numberingOffsetY, m_secAxisNumType );
     }
     else
     {
-        itemNum << getCoordinateNumber( n + m_numberingOffsetX, m_priAxisNumType );
+        itemNum += getCoordinateNumber( n + m_numberingOffsetX, m_priAxisNumType );
     }
 
     return itemNum;
@@ -458,7 +475,7 @@ void DIALOG_CREATE_ARRAY::ARRAY_CIRCULAR_OPTIONS::TransformItem( int n, BOARD_IT
 }
 
 
-wxString DIALOG_CREATE_ARRAY::ARRAY_CIRCULAR_OPTIONS::GetItemNumber( int n ) const
+std::string DIALOG_CREATE_ARRAY::ARRAY_CIRCULAR_OPTIONS::GetItemNumber( int n ) const
 {
     return getCoordinateNumber( n, m_numberingType );
 }

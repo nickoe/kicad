@@ -55,6 +55,7 @@
 
 #include <dialog_edit_module_for_Modedit.h>
 #include <dialog_move_exact.h>
+#include <dialog_create_array.h>
 #include <wildcards_and_files_ext.h>
 #include <menus_helpers.h>
 #include <footprint_wizard_frame.h>
@@ -649,27 +650,65 @@ void FOOTPRINT_EDIT_FRAME::Process_Special_Functions( wxCommandEvent& event )
         break;
 
     case ID_POPUP_PCB_MOVE_EXACT:
+    {
+        wxPoint translation;
+        double rotation = 0;
+
+        DIALOG_MOVE_EXACT dialog( this, translation, rotation );
+        int ret = dialog.ShowModal();
+
+        if( ret == DIALOG_MOVE_EXACT::MOVE_OK )
         {
-            wxPoint translation;
-            double rotation = 0;
+            SaveCopyInUndoList( GetBoard()->m_Modules, UR_MODEDIT );
 
-            DIALOG_MOVE_EXACT dialog( this, translation, rotation );
-            int ret = dialog.ShowModal();
+            BOARD_ITEM* item = GetScreen()->GetCurItem();
 
-            if( ret == DIALOG_MOVE_EXACT::MOVE_OK )
+            item->Move( translation );
+            item->Rotate( item->GetPosition(), rotation );
+            m_canvas->Refresh();
+        }
+
+        m_canvas->MoveCursorToCrossHair();
+        break;
+    }
+
+    case ID_POPUP_PCB_CREATE_ARRAY:
+    {
+        BOARD_ITEM* item = GetScreen()->GetCurItem();
+
+        if( !item )
+            break;
+
+        MODULE* module = static_cast<MODULE*>( item->GetParent() );
+
+        if( !module )
+            break;
+
+        DIALOG_CREATE_ARRAY::ARRAY_OPTIONS* array_opts = NULL;
+
+        DIALOG_CREATE_ARRAY dialog( this, &array_opts );
+        int ret = dialog.ShowModal();
+
+        if( ret == DIALOG_CREATE_ARRAY::CREATE_ARRAY_OK && array_opts != NULL )
+        {
+            SaveCopyInUndoList( GetBoard()->m_Modules, UR_MODEDIT );
+
+            for( int i = 0; i < array_opts->GetArraySize(); i++)
             {
-                SaveCopyInUndoList( GetBoard()->m_Modules, UR_MODEDIT );
+                BOARD_ITEM* new_item = module->DuplicateAndAddItem(
+                        item, true );
 
-                BOARD_ITEM* item = GetScreen()->GetCurItem();
+                array_opts->TransformItem( i, new_item, new_item->GetCenter() );
 
-                item->Move( translation );
-                item->Rotate( item->GetPosition(), rotation );
-                m_canvas->Refresh();
+                if( new_item->Type() == PCB_PAD_T && array_opts->ShouldRenumberItems() )
+                {
+                    const std::string padName = array_opts->GetItemNumber( i );
+                    static_cast<D_PAD*>( new_item )->SetPadName( padName );
+                }
             }
-
-            m_canvas->MoveCursorToCrossHair();
         }
         break;
+    }
 
     case ID_POPUP_PCB_IMPORT_PAD_SETTINGS:
         SaveCopyInUndoList( GetBoard()->m_Modules, UR_MODEDIT );

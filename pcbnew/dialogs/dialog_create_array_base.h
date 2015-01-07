@@ -93,6 +93,9 @@ class DIALOG_CREATE_ARRAY_BASE : public DIALOG_SHIM
 		wxTextCtrl* m_entryCircCount;
 		wxStaticText* m_labelCircRotate;
 		wxCheckBox* m_entryRotateItemsCb;
+		wxCheckBox* m_checkBoxCircRestartNumbering;
+		wxStaticText* m_labelCircNumbering;
+		wxChoice* m_choiceCircNumberingType;
 		wxStdDialogButtonSizer* m_stdButtons;
 		wxButton* m_stdButtonsOK;
 		wxButton* m_stdButtonsCancel;

@@ -491,11 +491,12 @@ int MODULE_TOOLS::PasteItems( TOOL_EVENT& aEvent )
     return 0;
 }
 
-int MODULE_TOOLS::DuplicateItems ( TOOL_EVENT& aEvent )
+int MODULE_TOOLS::DuplicateItems( TOOL_EVENT& aEvent )
 {
     bool increment = aEvent.IsAction( &COMMON_ACTIONS::duplicateIncrement );
 
     MODULE* module = m_board->m_Modules;
+
     assert( module );
 
     // first, check if we have a selection, or try to get one
@@ -531,7 +532,7 @@ int MODULE_TOOLS::DuplicateItems ( TOOL_EVENT& aEvent )
     {
         BOARD_ITEM* item = selection.Item<BOARD_ITEM>( i );
 
-        if ( item )
+        if( item )
             old_items.push_back( item );
     }
 
@@ -556,7 +557,7 @@ int MODULE_TOOLS::DuplicateItems ( TOOL_EVENT& aEvent )
     }
 
     m_frame->DisplayToolMsg( wxString::Format( _( "Duplicated %d item(s)" ),
-                             (int) old_items.size() ) );
+            (int) old_items.size() ) );
 
     // pick up the selected item(s) and start moving
     // this works well for "dropping" copies around
@@ -643,15 +644,17 @@ int MODULE_TOOLS::CreateArray( TOOL_EVENT& aEvent )
                 }
 
                 // set the number if needed:
-                if ( newItem->Type() == PCB_PAD_T )
+                if( newItem->Type() == PCB_PAD_T && array_opts->ShouldRenumberItems() )
                 {
-                    static_cast<D_PAD*>( newItem )->SetPadName( array_opts->GetItemNumber( ptN ) );
+                    const std::string padName = array_opts->GetItemNumber( ptN );
+                    static_cast<D_PAD*>( newItem )->SetPadName( padName );
                 }
             }
         }
 
         m_frame->GetGalCanvas()->Refresh();
     }
+
     setTransitions();
 
     return 0;

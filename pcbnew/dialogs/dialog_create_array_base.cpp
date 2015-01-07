@@ -171,7 +171,7 @@ DIALOG_CREATE_ARRAY_BASE::DIALOG_CREATE_ARRAY_BASE( wxWindow* parent, wxWindowID
 	m_gridPanel->SetSizer( bSizer2 );
 	m_gridPanel->Layout();
 	bSizer2->Fit( m_gridPanel );
-	m_gridTypeNotebook->AddPage( m_gridPanel, _("Grid"), true );
+	m_gridTypeNotebook->AddPage( m_gridPanel, _("Grid"), false );
 	m_circularPanel = new wxPanel( m_gridTypeNotebook, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
 	wxBoxSizer* bSizer4;
 	bSizer4 = new wxBoxSizer( wxHORIZONTAL );
@@ -238,11 +238,30 @@ DIALOG_CREATE_ARRAY_BASE::DIALOG_CREATE_ARRAY_BASE( wxWindow* parent, wxWindowID
 	
 	bSizer4->Add( gbSizer2, 1, wxEXPAND, 5 );
 	
+	wxBoxSizer* bSizer6;
+	bSizer6 = new wxBoxSizer( wxVERTICAL );
+	
+	m_checkBoxCircRestartNumbering = new wxCheckBox( m_circularPanel, wxID_ANY, _("Restart numbering"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_checkBoxCircRestartNumbering->SetValue(true); 
+	bSizer6->Add( m_checkBoxCircRestartNumbering, 0, wxALL, 5 );
+	
+	m_labelCircNumbering = new wxStaticText( m_circularPanel, wxID_ANY, _("Numbering type:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_labelCircNumbering->Wrap( -1 );
+	bSizer6->Add( m_labelCircNumbering, 0, wxALL, 5 );
+	
+	wxArrayString m_choiceCircNumberingTypeChoices;
+	m_choiceCircNumberingType = new wxChoice( m_circularPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_choiceCircNumberingTypeChoices, 0 );
+	m_choiceCircNumberingType->SetSelection( 0 );
+	bSizer6->Add( m_choiceCircNumberingType, 0, wxALL|wxEXPAND, 5 );
+	
+	
+	bSizer4->Add( bSizer6, 1, wxEXPAND, 5 );
+	
 	
 	m_circularPanel->SetSizer( bSizer4 );
 	m_circularPanel->Layout();
 	bSizer4->Fit( m_circularPanel );
-	m_gridTypeNotebook->AddPage( m_circularPanel, _("Circular"), false );
+	m_gridTypeNotebook->AddPage( m_circularPanel, _("Circular"), true );
 	
 	bMainSizer->Add( m_gridTypeNotebook, 1, wxEXPAND | wxALL, 5 );
 	
