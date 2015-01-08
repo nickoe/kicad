@@ -325,7 +325,7 @@ bool FOOTPRINT_EDIT_FRAME::OnRightClick( const wxPoint& MousePos, wxMenu* PopMen
             AddMenuItem( PopMenu, ID_POPUP_PCB_MOVE_EXACT, msg, KiBitmap( move_pad_xpm ) );
 
             msg = AddHotkeyName( _("Create Pad Array" ), g_Module_Editor_Hokeys_Descr, HK_CREATE_ARRAY );
-            AddMenuItem( PopMenu, ID_POPUP_PCB_CREATE_ARRAY, msg, KiBitmap( move_pad_xpm ) );
+            AddMenuItem( PopMenu, ID_POPUP_PCB_CREATE_ARRAY, msg, KiBitmap( array_pad_xpm ) );
 
 
             if( !flags )
@@ -369,7 +369,7 @@ bool FOOTPRINT_EDIT_FRAME::OnRightClick( const wxPoint& MousePos, wxMenu* PopMen
                     msg = AddHotkeyName( _("Create Text Array" ),
                                          g_Module_Editor_Hokeys_Descr, HK_CREATE_ARRAY );
                     AddMenuItem( PopMenu, ID_POPUP_PCB_CREATE_ARRAY,
-                                 msg, KiBitmap( move_pad_xpm ) );
+                                 msg, KiBitmap( array_text_xpm ) );
                 }
             }
 
@@ -411,7 +411,7 @@ bool FOOTPRINT_EDIT_FRAME::OnRightClick( const wxPoint& MousePos, wxMenu* PopMen
             AddMenuItem( PopMenu, ID_POPUP_PCB_MOVE_EXACT, msg, KiBitmap( move_line_xpm ) );
 
             msg = AddHotkeyName( _("Create Edge Array" ), g_Module_Editor_Hokeys_Descr, HK_CREATE_ARRAY );
-            AddMenuItem( PopMenu, ID_POPUP_PCB_CREATE_ARRAY, msg, KiBitmap( move_line_xpm ) );
+            AddMenuItem( PopMenu, ID_POPUP_PCB_CREATE_ARRAY, msg, KiBitmap( array_line_xpm ) );
 
             if( ( flags & (IS_NEW | IS_MOVED) ) == IS_MOVED )
                 AddMenuItem( PopMenu, ID_POPUP_PCB_PLACE_EDGE, _( "Place edge" ),
